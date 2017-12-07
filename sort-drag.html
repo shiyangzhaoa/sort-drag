@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>排序</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .box {
+      display: flex;
+      font-size: 15px;
+    }
+
+    .items {
+      margin: 20px 30px;
+      position: relative;
+      background-color: #f6f9fa;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .item {
+      width: 100px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      transition: background-color .3s, color .3s;
+      user-select: none;
+    }
+
+    .item:hover {
+      background-color: #00a1d6;
+      color: #fff;
+    }
+
+    .select {
+      position: absolute;
+      background-color: #00a1d6;
+      color: #fff;
+    }
+
+    .hold {
+      border: 1px dashed #ccc;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box"></div>
+  <script>
+    const $ = selectors => document.querySelector(selectors);
+    const $$ = selectors => document.querySelectorAll(selectors);
+    const navList = ['小强', '小明', '小红', '小绿', '小白', '小紫', '小强', '小明', '小红', '小绿', '小白', '小紫'];
+
+    const holdItemDom = document.createElement('div');
+    holdItemDom.classList.add('item', 'hold');
+    const listDom = document.createElement('div');
+    listDom.classList.add('items');
+    navList.forEach((v, i, arr) => {
+      const itemDom = document.createElement('div');
+      itemDom.classList.add('item');
+      itemDom.dataset.sortindex = i;
+      itemDom.textContent = v;
+      itemDom.draggable = true;
+      listDom.appendChild(itemDom);
+    });
+
+    $('.box').appendChild(listDom);
+
+    //主要代码
+    var dragObj, enterObj, dragIndex, enterIndex;
+    const itemsObj = $('.items');
+
+    itemsObj.addEventListener("drag", function (event) {
+      //console.log('drag');
+    }, false);
+
+     
+    itemsObj.addEventListener("dragstart", function (event) {
+      dragObj = event.target;
+      const itemDomList = $$('.items .item');
+      itemDomList.forEach((dom, index) => {
+        if (dom === dragObj) {
+          dragIndex = index;
+        }
+      });
+      dragged = event.target;
+      event.target.style.opacity = .5;
+      console.log('dragstart');
+    }, false); 
+    itemsObj.addEventListener("dragend", function (event) {
+      event.target.style.opacity = "";
+      console.log('dragend');
+    }, false);
+
+    itemsObj.addEventListener("dragover", function (event) {
+      event.preventDefault();
+      //console.log('dragover');
+    }, false);
+
+    document.addEventListener("dragexit", function (event) {
+      event.preventDefault();
+      console.log('dragexit');
+    }, false);
+
+     
+    itemsObj.addEventListener("dragenter", function (event) {
+      if (event.target.className === 'item') {
+        event.target.classList.add('hold');
+      }
+      enterObj = event.target;
+      const itemDomList = $$('.items .item');
+      itemDomList.forEach((dom, index) => {
+        if (dom === enterObj) {
+          enterIndex = index;
+        }
+      });
+      console.log('dragenter');
+    }, false);
+
+     
+    itemsObj.addEventListener("dragleave", function (event) {
+      if (/hold/.test(event.target.classList)) {
+        event.target.classList.remove('hold');
+      }
+      console.log('dragleave');
+    }, false);
+
+    itemsObj.addEventListener("drop", function (event) {
+      event.preventDefault();
+      enterObj.classList.remove('hold');
+      console.log('drop');
+      if (dragIndex < enterIndex) {
+        dragObj.remove();
+        enterObj.after(dragObj);
+      } else if (dragIndex > enterIndex) {
+        dragObj.remove();
+        enterObj.before(dragObj);
+      }   
+    }, false);
+  </script>
+</body>
+
+</html>
